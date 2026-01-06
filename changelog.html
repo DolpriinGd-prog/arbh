@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARBH Demon List - Changelog</title>
+    <style>
+        :root {
+            --color1: #ff4444;
+            --color2: #ff6600;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f0f0f;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            font-size: 20px;
+        }
+        h1 {
+            text-align: center;
+            background: linear-gradient(90deg, var(--color1), var(--color2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 36px;
+            margin: 20px 0;
+        }
+        .header {
+            background: linear-gradient(90deg, var(--color1), var(--color2));
+            padding: 10px;
+            text-align: center;
+            border-bottom: 2px solid var(--color1);
+        }
+        .header a {
+            color: #000000;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .header a:hover {
+            text-decoration: underline;
+        }
+        .changelog {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .entry {
+            background-color: #1a1a1a;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 5px solid var(--color1);
+        }
+        .entry h3 {
+            margin: 0 0 10px 0;
+            color: var(--color1);
+        }
+        .entry p {
+            margin: 5px 0;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(90deg, #2a2a2a, #3a3a3a);
+            color: var(--color1);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html">Demonlist</a>
+        <a href="stats.html">Stats</a>
+        <a href="changelog.html">Changelog</a>
+        <a href="account.html">Account</a>
+        <button id="settingsBtn" style="background: none; border: none; color: #000000; font-size: 18px; cursor: pointer; margin-left: auto;">⚙️</button>
+    </div>
+    <h1>ARBH Demon List Changelog</h1>
+    <div class="changelog" id="changelog">
+        <!-- Changelog entries will be added here -->
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div style="background-color: #1a1a1a; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 400px; color: white;">
+            <span id="closeModal" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2>Settings</h2>
+            <label for="color1">Color 1:</label>
+            <input type="color" id="color1" value="#ff4444"><br><br>
+            <label for="color2">Color 2:</label>
+            <input type="color" id="color2" value="#ff6600"><br><br>
+            <button id="applyColors">Apply</button>
+        </div>
+    </div>
+
+    <script>
+        // Load changelog from localStorage
+        let changelog = JSON.parse(localStorage.getItem('changelog')) || [];
+
+        // Default entries if none exist
+        if (changelog.length === 0) {
+            changelog = [
+                {
+                    date: '2026-01-05',
+                    title: 'New Level Added',
+                    description: 'Added Zodiac by BIANOX, verified by Dolpriin.'
+                },
+                {
+                    date: '2026-01-05',
+                    title: 'Initial Release',
+                    description: 'Added the first three demon levels: Oblivion, The Golden, and Unknown.'
+                }
+            ];
+            localStorage.setItem('changelog', JSON.stringify(changelog));
+        }
+
+        // Function to render changelog
+        function renderChangelog() {
+            const changelogDiv = document.getElementById('changelog');
+            changelogDiv.innerHTML = '';
+            changelog.forEach(entry => {
+                const entryDiv = document.createElement('div');
+                entryDiv.className = 'entry';
+                entryDiv.innerHTML = `
+                    <h3>${entry.title} - ${entry.date}</h3>
+                    <p>${entry.description}</p>
+                `;
+                changelogDiv.appendChild(entryDiv);
+            });
+        }
+
+        renderChangelog();
+
+        // Settings functionality
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeModal = document.getElementById('closeModal');
+        const applyColors = document.getElementById('applyColors');
+        const color1Input = document.getElementById('color1');
+        const color2Input = document.getElementById('color2');
+
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        });
+
+        applyColors.addEventListener('click', () => {
+            const color1 = color1Input.value;
+            const color2 = color2Input.value;
+            document.documentElement.style.setProperty('--color1', color1);
+            document.documentElement.style.setProperty('--color2', color2);
+            localStorage.setItem('color1', color1);
+            localStorage.setItem('color2', color2);
+            settingsModal.style.display = 'none';
+        });
+
+        // Load saved colors
+        const savedColor1 = localStorage.getItem('color1');
+        const savedColor2 = localStorage.getItem('color2');
+        if (savedColor1) {
+            document.documentElement.style.setProperty('--color1', savedColor1);
+            color1Input.value = savedColor1;
+        }
+        if (savedColor2) {
+            document.documentElement.style.setProperty('--color2', savedColor2);
+            color2Input.value = savedColor2;
+        }
+    </script>
+    <footer>
+        ARBH Demon List - Powered by ARBH / Dolpriin, VinniboyGD and Dorianohero
+    </footer>
+</body>
+</html>

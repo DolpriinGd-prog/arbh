@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARBH Demon List - Account</title>
+    <style>
+        :root {
+            --color1: #ff4444;
+            --color2: #ff6600;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f0f0f;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            font-size: 20px;
+        }
+        h1 {
+            text-align: center;
+            background: linear-gradient(90deg, var(--color1), var(--color2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 36px;
+            margin: 20px 0;
+        }
+        .header {
+            background: linear-gradient(90deg, var(--color1), var(--color2));
+            padding: 10px;
+            text-align: center;
+            border-bottom: 2px solid var(--color1);
+        }
+        .header a {
+            color: #000000;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .header a:hover {
+            text-decoration: underline;
+        }
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        input, button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            background: linear-gradient(90deg, var(--color1), var(--color2));
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        .message {
+            text-align: center;
+            margin: 10px 0;
+            color: var(--color1);
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(90deg, #2a2a2a, #3a3a3a);
+            color: var(--color1);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html">Demonlist</a>
+        <a href="stats.html">Stats</a>
+        <a href="changelog.html">Changelog</a>
+        <a href="account.html">Account</a>
+        <span id="adminLink" style="display: none;"><a href="admin.html">Admin</a></span>
+        <button id="adminAccessBtn" style="background: none; border: none; color: #000000; font-size: 18px; cursor: pointer; margin-left: 8px;">Admin</button>
+        <button id="settingsBtn" style="background: none; border: none; color: #000000; font-size: 18px; cursor: pointer; margin-left: 8px;">⚙️</button>
+    </div>
+    <h1>ARBH Demon List - Account</h1>
+    <div class="form-container">
+        <div id="loginForm">
+            <h2>Login</h2>
+            <input type="text" id="loginUsername" placeholder="Username">
+            <input type="password" id="loginPassword" placeholder="Password">
+            <button id="loginBtn">Login</button>
+            <p>Don't have an account? <a href="#" id="showRegister">Register here</a></p>
+        </div>
+        <div id="registerForm" style="display: none;">
+            <h2>Register</h2>
+            <input type="text" id="regUsername" placeholder="Username">
+            <input type="password" id="regPassword" placeholder="Password">
+            <button id="registerBtn">Register</button>
+            <p>Already have an account? <a href="#" id="showLogin">Login here</a></p>
+        </div>
+        <div id="userInfo" style="display: none;">
+            <h2>Welcome, <span id="currentUser"></span>!</h2>
+            <button id="logoutBtn">Logout</button>
+        </div>
+        <div class="message" id="message"></div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div style="background-color: #1a1a1a; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 400px; color: white;">
+            <span id="closeModal" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2>Settings</h2>
+            <label for="color1">Color 1:</label>
+            <input type="color" id="color1" value="#ff4444"><br><br>
+            <label for="color2">Color 2:</label>
+            <input type="color" id="color2" value="#ff6600"><br><br>
+            <button id="applyColors">Apply</button>
+        </div>
+    </div>
+
+    <script>
+        // Load users
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        if (users.length === 0) {
+            users.push({ username: 'Dolpriin', password: 'Ben1013294', isAdmin: true });
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        let currentUser = localStorage.getItem('currentUser');
+
+        // Admin access button - prompt for password ARBH1234
+        document.addEventListener('DOMContentLoaded', () => {
+            const adminBtn = document.getElementById('adminAccessBtn');
+            if (adminBtn) {
+                adminBtn.addEventListener('click', () => {
+                    const pass = prompt('Enter admin password to access admin panel:');
+                    if (pass === 'ARBH1234') {
+                        // ensure admin user exists and mark as admin
+                        let adminUser = users.find(u => u.username === 'admin');
+                        if (!adminUser) {
+                            users.push({ username: 'admin', password: 'ARBH1234', isAdmin: true });
+                        } else {
+                            adminUser.password = 'ARBH1234';
+                            adminUser.isAdmin = true;
+                        }
+                        localStorage.setItem('users', JSON.stringify(users));
+                        localStorage.setItem('currentUser', 'admin');
+                        // show admin link and redirect
+                        document.getElementById('adminLink').style.display = 'inline';
+                        window.location.href = 'admin.html';
+                    } else {
+                        alert('Incorrect admin password.');
+                    }
+                });
+            }
+        });
+
+        // Check if logged in
+        if (currentUser) {
+            showUserInfo(currentUser);
+        }
+
+        // Login
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                localStorage.setItem('currentUser', username);
+                showUserInfo(username);
+                showMessage('Login successful!', 'green');
+            } else {
+                showMessage('Invalid username or password.', 'red');
+            }
+        });
+
+        // Register
+        document.getElementById('registerBtn').addEventListener('click', () => {
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+            if (username && password) {
+                if (users.find(u => u.username === username)) {
+                    showMessage('Username already exists.', 'red');
+                } else {
+                    users.push({ username, password, isAdmin: false });
+                    localStorage.setItem('users', JSON.stringify(users));
+                    showMessage('Registration successful! Please login.', 'green');
+                    showLogin();
+                }
+            } else {
+                showMessage('Please fill all fields.', 'red');
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            location.reload();
+        });
+
+        // Show forms
+        document.getElementById('showRegister').addEventListener('click', showRegister);
+        document.getElementById('showLogin').addEventListener('click', showLogin);
+
+        function showLogin() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'none';
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('userInfo').style.display = 'none';
+        }
+
+        function showUserInfo(username) {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('currentUser').textContent = username;
+            const user = users.find(u => u.username === username);
+            if (user && user.isAdmin) {
+                document.getElementById('adminLink').style.display = 'inline';
+            }
+        }
+
+        function showMessage(msg, color) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = msg;
+            messageEl.style.color = color;
+            setTimeout(() => messageEl.textContent = '', 3000);
+        }
+
+        // Settings functionality
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeModal = document.getElementById('closeModal');
+        const applyColors = document.getElementById('applyColors');
+        const color1Input = document.getElementById('color1');
+        const color2Input = document.getElementById('color2');
+
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        });
+
+        applyColors.addEventListener('click', () => {
+            const color1 = color1Input.value;
+            const color2 = color2Input.value;
+            document.documentElement.style.setProperty('--color1', color1);
+            document.documentElement.style.setProperty('--color2', color2);
+            localStorage.setItem('color1', color1);
+            localStorage.setItem('color2', color2);
+            settingsModal.style.display = 'none';
+        });
+
+        // Load saved colors
+        const savedColor1 = localStorage.getItem('color1');
+        const savedColor2 = localStorage.getItem('color2');
+        if (savedColor1) {
+            document.documentElement.style.setProperty('--color1', savedColor1);
+            color1Input.value = savedColor1;
+        }
+        if (savedColor2) {
+            document.documentElement.style.setProperty('--color2', savedColor2);
+            color2Input.value = savedColor2;
+        }
+    </script>
+    <footer>
+        ARBH Demon List - Powered by ARBH / Dolpriin and VinniboyGD
+    </footer>
+</body>
+</html>
