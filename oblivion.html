@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARBH Demon List - Oblivion</title>
+    <style>
+        :root {
+            --color1: #ff4444;
+            --color2: #ff6600;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f0f0f;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            font-size: 20px;
+            position: relative;
+        }
+        .bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://img.youtube.com/vi/kvvI-Az3vZ8/0.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            filter: blur(10px);
+            -webkit-filter: blur(10px);
+            z-index: -1;
+            opacity: 0.3;
+        }
+        h1 {
+            text-align: center;
+            background: linear-gradient(90deg, var(--color1), var(--color2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 36px;
+            margin: 20px 0;
+        }
+        h2 {
+            color: var(--color1);
+        }
+        .header {
+            background: linear-gradient(90deg, var(--color1), var(--color2));
+            padding: 10px;
+            text-align: center;
+            border-bottom: 2px solid var(--color1);
+        }
+        .header a {
+            color: #000000;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .header a:hover {
+            text-decoration: underline;
+        }
+        .level-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        img {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+        }
+        .players {
+            margin-top: 20px;
+        }
+        .players ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .players li {
+            background-color: #1a1a1a;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg"></div>
+    <div class="header">
+        <a href="index.html">Demonlist</a>
+        <a href="stats.html">Stats</a>
+        <a href="changelog.html">Changelog</a>
+        <a href="account.html">Account</a>
+        <button id="settingsBtn" style="background: none; border: none; color: #000000; font-size: 18px; cursor: pointer; margin-left: auto;">⚙️</button>
+    </div>
+    <h1>ARBH Demon List - Oblivion</h1>
+    <div class="level-info">
+        <img src="https://img.youtube.com/vi/kvvI-Az3vZ8/0.jpg" alt="Oblivion thumbnail">
+        <h2>Oblivion</h2>
+        <p><strong>Creator:</strong> Dice88</p>
+        <p><strong>Verified:</strong> VinniboyGD</p>
+        <p><strong>List %:</strong> <span id="listPercentValue">--</span></p>
+        <p><strong>Points:</strong> <span id="pointsValue">--</span></p>
+    </div>
+    <div class="players">
+        <h2>Players who completed this level:</h2>
+        <ul id="playerList"></ul>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div style="background-color: #1a1a1a; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 400px; color: white;">
+            <span id="closeModal" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2>Settings</h2>
+            <label for="color1">Color 1:</label>
+            <input type="color" id="color1" value="#ff4444"><br><br>
+            <label for="color2">Color 2:</label>
+            <input type="color" id="color2" value="#ff6600"><br><br>
+            <button id="applyColors">Apply</button>
+        </div>
+    </div>
+
+    <script>
+        // Load completions from localStorage
+        let completions = JSON.parse(localStorage.getItem('completions')) || [];
+
+        // Find submissions for "Oblivion"
+        const level = "Oblivion";
+        const submissions = completions.filter(sub => sub.level === level);
+
+        const playerList = document.getElementById('playerList');
+        if (submissions.length > 0) {
+            submissions.forEach(sub => {
+                const li = document.createElement('li');
+                li.innerHTML = `${sub.player} - <a href="${sub.video}" target="_blank">Video</a>${sub.percent ? ` - ${sub.percent}%` : ''}`;
+                playerList.appendChild(li);
+            });
+        } else {
+            playerList.innerHTML = '<li>No players have submitted this completion yet.</li>';
+        }
+
+        // Settings functionality
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeModal = document.getElementById('closeModal');
+        const applyColors = document.getElementById('applyColors');
+        const color1Input = document.getElementById('color1');
+        const color2Input = document.getElementById('color2');
+
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        });
+
+        applyColors.addEventListener('click', () => {
+            const color1 = color1Input.value;
+            const color2 = color2Input.value;
+            document.documentElement.style.setProperty('--color1', color1);
+            document.documentElement.style.setProperty('--color2', color2);
+            localStorage.setItem('color1', color1);
+            localStorage.setItem('color2', color2);
+            settingsModal.style.display = 'none';
+        });
+
+        // Load saved colors
+        const savedColor1 = localStorage.getItem('color1');
+        const savedColor2 = localStorage.getItem('color2');
+        if (savedColor1) {
+            document.documentElement.style.setProperty('--color1', savedColor1);
+            color1Input.value = savedColor1;
+        }
+        if (savedColor2) {
+            document.documentElement.style.setProperty('--color2', savedColor2);
+            color2Input.value = savedColor2;
+        }
+
+        // Compute and display points for this level
+        function computePoints(rank) {
+            const base = 350;
+            const step = 13.28;
+            return Math.round((base - (rank - 1) * step) * 100) / 100;
+        }
+        (function displayPoints() {
+            const levels = JSON.parse(localStorage.getItem('levels')) || [];
+            const thisLevel = levels.find(l => l.name === 'Oblivion');
+            if (thisLevel) {
+                const pts = computePoints(thisLevel.rank);
+                const el = document.getElementById('pointsValue');
+                el.textContent = Number.isInteger(pts) ? pts : pts.toFixed(2);
+                const lpEl = document.getElementById('listPercentValue');
+                if (lpEl) lpEl.textContent = (thisLevel.rank <= 75 && thisLevel.listPercent) ? thisLevel.listPercent : '';
+            }
+        })();
+    </script>
+    <footer style="text-align: center; padding: 10px; background: linear-gradient(90deg, #2a2a2a, #3a3a3a); color: #ff4444; margin-top: 20px;">
+        ARBH Demon List - Powered by ARBH / Dolpriin and VinniboyGD
+    </footer>
+</body>
+</html></content>
+<parameter name="filePath">c:\Users\reald\Desktop\arbh demonlist\oblivion.html
